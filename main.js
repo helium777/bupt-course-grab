@@ -1,6 +1,27 @@
-let COURSES_NAME_KEYWORDS = [];
-let COURSES_GROUP_KEYWORDS = [["男", "乒乓球"]];
-let INTERVAL_MS = 1000;
+// ----- 需要配置的参数 -----
+/* 需要抢的课程名称, 需要和教务系统上的课程名称完全一致 */
+let COURSES = [
+  "物联网技术",
+  "移动互联网技术及应用",
+  "并行计算与GPU编程",
+  "无线传感器网络（高新标杆课）",
+  "下一代Internet技术与协议",
+  "信息与知识获取",
+  "操作系统课程设计",
+  "编译原理与技术课程设计",
+  "机器学习",
+  "大数据技术基础",
+  "Linux开发环境及应用",
+];
+/* 需要抢的课程分组名称, 可以用于体育专项的抢课, 需要完全一致 */
+let COURSE_GROUPS = [
+  "男84游泳",
+];
+/* 抢课间隔, 单位毫秒. 推荐数值: 抢课 100ms, 捡漏 500ms */
+let INTERVAL_MS = 100;
+// ------------------------
+
+// 以下不需要修改
 
 let mainInterval;
 let targetCourses = [];
@@ -54,22 +75,9 @@ const getCourses = () => {
     $.post(path, params, (data) => {
       let aaData = $.parseJSON(data).aaData;
       for (let course of aaData) {
-        let flag = false;
-        for (let keywords of COURSES_NAME_KEYWORDS) {
-          if (keywords.every((keyword) => course.kcmc.includes(keyword))) {
-            flag = true;
-            break;
-          }
-        }
-        if (!flag) {
-          for (let keywords of COURSES_GROUP_KEYWORDS) {
-            if (keywords.every((keyword) => course.fzmc.includes(keyword))) {
-              flag = true;
-              break;
-            }
-          }
-        }
-        if (flag) {
+        if (COURSES.includes(course.kcmc)) {
+          targetCourses.push(course);
+        } else if (COURSE_GROUPS.includes(course.fzmc)) {
           targetCourses.push(course);
         }
       }

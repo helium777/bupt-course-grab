@@ -19,6 +19,8 @@ let COURSE_GROUPS = [
 ];
 /* 抢课间隔, 单位毫秒. 推荐数值: 抢课 100ms, 捡漏 500ms */
 let INTERVAL_MS = 100;
+/* 是否开启公选课抢课, 默认关闭, 以防止抢到课程名一样的公选课 */
+let ENABLE_GGXXK = false;
 // ------------------------
 
 // 以下不需要修改
@@ -49,11 +51,12 @@ const handler = () => {
     "/jsxsd/xsxkkc/xxxkOper", // 选修
     "/jsxsd/xsxkkc/bxxkOper", // 必修
   ];
+  if (ENABLE_GGXXK) {
+    paths.push("/jsxsd/xsxkkc/ggxxkxkOper"); // 公选
+  }
   for (let course of targetCourses) {
     for (let path of paths) {
-      $.get(path, course, (data) => {
-        console.log(data);
-      });
+      $.get(path, course, console.log);
     }
   }
 };
@@ -68,9 +71,10 @@ const getCourses = () => {
   let paths = [
     "/jsxsd/xsxkkc/xsxkBxxk", // 必修
     "/jsxsd/xsxkkc/xsxkXxxk", // 选修
-    "/jsxsd/xsxkkc/xsxkGgxxkxk", // 公选
   ];
-
+  if (ENABLE_GGXXK) {
+    paths.push("/jsxsd/xsxkkc/xsxkGgxxkxk"); // 公选
+  }
   for (let path of paths) {
     $.post(path, params, (data) => {
       let aaData = $.parseJSON(data).aaData;
